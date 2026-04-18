@@ -41,39 +41,6 @@ class BNNMnist(nn.Module):
                 nn.init.normal_(m.weight, 0, 0.01)
                 # nn.init.zeros_(m.bias)
         return
-# class BNNMnist(nn.Module):
-#     def __init__(self, num_classes=10):
-#         super().__init__()
-#         self.classifier = nn.Sequential(
-#             nn.Flatten(),
-#             BNNLinear(28*28, 256, bias=False),
-#             # nn.BatchNorm1d(2048),          # critical for BNNs
-#             nn.Hardtanh(inplace=True),     # clamps to [-1,1] for next layer's STE
-#             # BNNLinear(2048, 512, bias=False),
-#             # nn.BatchNorm1d(512),
-#             # nn.Hardtanh(inplace=True),
-#             BNNLinear(256, num_classes, bias=False),
-#             # nn.BatchNorm1d(num_classes),   # on logits — standard in BNN literature
-#         )
-
-#     def forward(self, x):
-#         x = 2*x-1
-#         return self.classifier(x)
-
-#     def init_w(self):
-#         # weight initialization
-#         for m in self.modules():
-#             if isinstance(m, nn.Conv2d):
-#                 nn.init.kaiming_normal_(m.weight, mode='fan_out')
-#                 if m.bias is not None:
-#                     nn.init.zeros_(m.bias)
-#             elif isinstance(m, nn.BatchNorm2d):
-#                 nn.init.ones_(m.weight)
-#                 nn.init.zeros_(m.bias)
-#             elif isinstance(m, nn.Linear):
-#                 nn.init.normal_(m.weight, 0, 0.01)
-#                 # nn.init.zeros_(m.bias)
-#         return
 
 def bnn_mnist(num_classes=10):
     return BNNMnist(num_classes)
