@@ -1,4 +1,5 @@
-`include "weight_mem.v"
+`include "neuron.v"
+`include "activation.v"
 
 module top (
     input  [783:0] image,
@@ -23,7 +24,9 @@ module top (
   genvar i;
   generate
     for (i = 0; i < 256; i = i + 1) begin : g_layer_1_neurons
-      neuron layer_1_neurons (
+      neuron #(N(
+          784
+      )) layer_1_neurons (
           .weight(w1[i]),
           .x(image),
           .out(layer_1_neuron_outputs)
@@ -46,7 +49,9 @@ module top (
   integer [9:0] layer_2_neuron_outputs;
   generate
     for (i = 0; i < 10; i = i + 1) begin : g_layer_2
-      neuron layer_2 (
+      neuron #(N(
+          256
+      )) layer_2 (
           .weight(w2[i]),
           .x(layer_1_out[i]),
           .out(layer_2_neuron_outputs)
