@@ -97,7 +97,7 @@ class BnnClassifier():
             if is_best:
                 best_accuracy = test_accuracy
             
-            print('Train Epoch {0}\t Loss: {1:.6f}\t Test Accuracy {2:.3f} \t lr: {3:.4f}'
+            print('Train Epoch {0}\t Loss: {1:.6f}\t Test Accuracy {2:.3f} \t lr: {3:e}'
                     .format(epoch, epoch_losses.mean(), test_accuracy, lr))
             print('Best accuracy: {:.3f} '.format(best_accuracy))
 

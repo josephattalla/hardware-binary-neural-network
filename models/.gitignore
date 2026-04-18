@@ -1,5 +1,5 @@
 __pycache__/
 *.py[cod]
-*.pth
-*.pth.tar
 datasets/
+.venv/
+.vscode/

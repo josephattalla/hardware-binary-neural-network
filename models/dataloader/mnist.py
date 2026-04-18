@@ -1,7 +1,7 @@
 from torch.utils.data import DataLoader
 from os.path import join
 from torchvision.datasets import MNIST
-from torchvision.transforms import Compose, Resize, Normalize, ToTensor
+from torchvision.transforms import Compose, Lambda, Resize, Normalize, ToTensor
 
 
 def load_train_data(batch_size=128, sampler=None):
@@ -13,7 +13,8 @@ def load_train_data(batch_size=128, sampler=None):
             transform=Compose([
                    Resize((28, 28)),
                    ToTensor(),
-                   Normalize((0.1307,),(0.308,)),
+                   # Normalize((0.1307,),(0.308,)),
+                   Lambda(lambda x: (x > 0.5).float()),
                   ])),
         batch_size=batch_size, shuffle=True, **loader_kwargs)
 
@@ -29,7 +30,8 @@ def load_test_data(batch_size=1000, sampler=None):
             transform=Compose([
                    Resize((28, 28)),
                    ToTensor(),
-                   Normalize((0.1307,),(0.308,)),
+                   # Normalize((0.1307,),(0.308,)),
+                   Lambda(lambda x: (x > 0.5).float()),
                     ])),
         batch_size= batch_size, shuffle=False,sampler=sampler, **loader_kwargs)
 
