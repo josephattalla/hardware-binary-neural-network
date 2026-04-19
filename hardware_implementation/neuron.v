@@ -3,7 +3,7 @@ module neuron #(
 ) (
     input [IN-1:0] weight,
     input [IN-1:0] x,
-    output integer count
+    output reg signed [31:0] count
 );
   wire [IN-1:0] mult;
 
