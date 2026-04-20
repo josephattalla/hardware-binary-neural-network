@@ -7,13 +7,13 @@ module top (
 );
 
   // layer 1 weights
-  reg [783:0] w1[0:255];
+  (* DONT_TOUCH = "yes" *) reg [783:0] w1[0:255];
   initial begin
     $readmemb("../models/weights_layer1.txt", w1);
   end
 
   // layer 2 weights
-  reg [255:0] w2[0:9];
+  (* DONT_TOUCH = "yes" *) reg [255:0] w2[0:9];
   initial begin
     $readmemb("../models/weights_layer2.txt", w2);
   end
