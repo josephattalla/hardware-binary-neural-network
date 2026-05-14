@@ -1,33 +1,64 @@
-`include "top.v"
+`timescale 1ns / 1ps
 module tb_top;
-  reg [783:0] test_data[0:9999];
-  reg [3:0] test_labels[0:9999];
-  reg [783:0] image;
-  wire [3:0] classification;
+    reg        clk   = 0;
+    reg        start = 0;
+    reg  [7:0] pixel_in = 0;
+    wire [3:0] classification;
+    wire       done;
 
-  initial begin
-    $readmemb("../models/test_data.txt", test_data);
-    $readmemh("../models/test_labels.txt", test_labels);
-  end
+    reg [783:0] test_images [0:9999];
+    reg [3:0]   test_labels [0:9999];
 
-  top dut (
-      .image(image),
-      .classification(classification)
-  );
+    integer i, b, correct;
+    integer active_count, l1_idx;
 
-  integer i;
-  integer correct;
-  initial begin
-    $dumpfile("tb_top.vcd");
-    $dumpvars(0, tb_top);
-    correct = 0;
-    for (i = 0; i < 10000; i = i + 1) begin
-      image = test_data[i];
-      #10;
-      if (classification == test_labels[i]) correct = correct + 1;
-      if (i % 10 == 0) $display("%d images completed", i);
+    top dut (
+        .clk            (clk),
+        .start          (start),
+        .pixel_in       (pixel_in),
+        .classification (classification),
+        .done           (done)
+    );
+
+    always #5 clk = ~clk;
+
+    initial begin
+        $readmemb("../models/test_data.txt",   test_images);
+        $readmemh("../models/test_labels.txt", test_labels);
+
+        correct = 0;
+
+        for (i = 0; i < 100; i = i + 1) begin
+
+            //Send byte 0 with start
+            @(negedge clk);
+            pixel_in = test_images[i][783:776]; // bits [783:776] = byte 0 (MSB first)
+            start    = 1;
+
+            // Send bytes 1-97 for each cycle of loaded in pixel
+            for (b = 1; b < 98; b = b + 1) begin
+                @(negedge clk);
+                start    = 0;
+                // Extract byte b: MSB first from test_images[i]
+                pixel_in = test_images[i][783 - b*8 -: 8];
+            end
+
+            // Wait for DUT to finish
+            wait(done === 1'b1);
+            @(negedge clk); // for classification register stability
+
+            if (classification == test_labels[i]) correct = correct + 1;
+
+            active_count = 0;
+            for (l1_idx = 0; l1_idx < 256; l1_idx = l1_idx + 1) begin
+                if (dut.l1_results[l1_idx] === 1'b1) active_count = active_count + 1;
+            end
+
+            $display("Image %0d | Predicted: %0d | Actual: %0d | L1 Active: %0d/256",
+                     i+1, classification, test_labels[i], active_count);
+        end
+
+        $display("Final Accuracy: %0d / 100", correct);
+        $finish;
     end
-    $display("accuracy: %0d / 10000", correct);
-    $finish;
-  end
 endmodule
