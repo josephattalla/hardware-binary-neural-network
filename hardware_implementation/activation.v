@@ -1,3 +1,4 @@
+//Module no longer used in top level
 module activation (
     input signed [31:0] count, // integers cannot be used as input ports, this is functionally identical
     output sign

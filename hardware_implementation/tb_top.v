@@ -30,27 +30,25 @@ module tb_top;
 
         for (i = 0; i < 100; i = i + 1) begin
 
-            //Send byte 0 with start asserted
+            //Send byte 0 with start
             @(negedge clk);
             pixel_in = test_images[i][783:776]; // bits [783:776] = byte 0 (MSB first)
             start    = 1;
 
-            // Send bytes 1-97, deassert start after first byte 
+            // Send bytes 1-97 for each cycle of loaded in pixel
             for (b = 1; b < 98; b = b + 1) begin
                 @(negedge clk);
                 start    = 0;
-                // Extract byte b: MSB-first from test_images[i]
-                // b=1  -> [775:768], b=97 -> [7:0]
+                // Extract byte b: MSB first from test_images[i]
                 pixel_in = test_images[i][783 - b*8 -: 8];
             end
 
             // Wait for DUT to finish
             wait(done === 1'b1);
-            @(negedge clk); // let classification register settle
+            @(negedge clk); // for classification register stability
 
             if (classification == test_labels[i]) correct = correct + 1;
 
-            // Debug count active layer-1 neurons
             active_count = 0;
             for (l1_idx = 0; l1_idx < 256; l1_idx = l1_idx + 1) begin
                 if (dut.l1_results[l1_idx] === 1'b1) active_count = active_count + 1;

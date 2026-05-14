@@ -5,6 +5,6 @@
 # 50 MHz clock - 20ns period - FMAX is 89.7 MHz
 create_clock -period 20.000 -name sys_clk [get_ports clk]
 
-# Input/output delay margins
+# Input and output delay margins
 set_input_delay  -clock sys_clk 2.000 [get_ports {start pixel_in[*]}]
 set_output_delay -clock sys_clk 2.000 [get_ports {classification[*] done}]S
